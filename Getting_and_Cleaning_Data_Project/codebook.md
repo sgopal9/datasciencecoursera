@@ -17,7 +17,7 @@ The dataset is unique at the subject - activity level. The `subject_id` is an id
  
 For each subject and activity, the dataset lists two types of measurements, normalized and bounded within -1 and 1. _Time_ measurements are the raw acclerometere and gyroscope signals, while _Frequency_ measurements are Fast Fourier Transformed (FFT).
 
-##### Time signals
+##### Time
 
 - `TimeBodyAccelerometermean` and `TimeBodyAccelerometerstdX`: mean and standard deviation of time body acceleration in the X, Y and Z directions
 
@@ -39,7 +39,7 @@ For each subject and activity, the dataset lists two types of measurements, norm
 
 - `TimeBodyGyroscopeJerkMagnitudemean` and `TimeBodyGyroscopeJerkMagnitudestd`: mean and standard deviation of the time magnitude of body angular velocity jerk (derivation of the angular velocity in time)
 
-##### Frequency-domain signals
+##### Frequency
 
 - `FrequencyBodyAccelerometermean` and `FrequencyBodyAccelerometerstd`: mean and standard deviation of frequency body acceleration in the X, Y and Z directions
 
