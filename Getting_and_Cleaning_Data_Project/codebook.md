@@ -61,6 +61,18 @@ For each subject and activity, the dataset lists two types of measurements, norm
 
 - `FrequencyBodyGyroscopeJerkMagnitudeMean`, `FrequencyBodyGyroscopeJerkMagnitudestd`, and `FrequencyBodyGyroscopeJerkMagnitudeMeanFrequency`: mean, standard deviation, and weighted mean of the frequency components of the frequency magnitude of body angular velocity jerk (derivation of the angular velocity in time)
 
+### Data Management Process
+
+The database was downloaded [here.](https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip)
+
+The following steps were taken to clean the datasets.
+
+1. Merged the _test_ and _training_ datasets by the subject.
+2. Kept fields with averages or standard deviations on the measurements.
+3. Merged in the activity labels.
+4. Cleaned up column names to make them more descriptive.
+5. Created a text file of the dataset.
+
 ### Citation
 
 Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012
