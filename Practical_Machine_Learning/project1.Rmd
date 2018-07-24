@@ -1,0 +1,90 @@
+---
+title: "Johns Hopkins Coursera - Practical Machine Learning Module Final Project"
+output: html_document
+---
+
+## Introduction
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. 
+
+The objective of this project is to predict the manner in which the participants did the exercise (i.e., the 'classe' field in the training set). This report summarizes how I built this model, used cross-validation, expected output of sample errors, and explanations on choices. I also include predictions for 20 different test cases.
+
+## Processing Data
+Necessary packages were first loaded below and I set my working directory to read in the training and testing datasets. Note that the files were downloaded to my directory earlier.
+
+We can see from the results of each 'dim' command that the training dataset contains 19,622 observations and 160 fields, while the testing dataset contains 20 observations.
+```{r}
+library(caret)
+library(randomForest)
+library(rpart)
+library(plyr)
+```
+```{r}
+setwd("C:/Users/shrut/datasciencecoursera/Practical_Machine_Learning")
+training_data_raw <- read.csv("./pml-training.csv")
+testing_data_raw  <- read.csv("./pml-testing.csv")
+head(training_data_raw)
+dim(training_data_raw)
+head(testing_data_raw)
+dim(testing_data_raw)
+```
+
+From viewing the dataset, there are many fields that have missing values. These will not be useful in model selection and prediction, so it would be more helpful to simply remove them.
+```{r}
+training_data <- training_data_raw[, colSums(is.na(training_data_raw)) == 0] 
+testing_data  <- testing_data_raw[, colSums(is.na(testing_data_raw)) == 0] 
+```
+
+There are also several fields that are not relevant to predicting the classe outcome (i.e., not related to acceloremeters). These variables are those than contain X, timestamps, or windows. Moreover, some fields are not common among both the testing and training datasets, meaning that they will not be useful for predictions. We do not need fields that contain values such as "DIV/#0". I also removed these.
+```{r}
+training_data <- training_data[, !(grepl("^X|timestamp|window", names(training_data)))]
+testing_data  <- testing_data[, !(grepl("^X|timestamp|window", names(testing_data)))]
+
+classe <- training_data$classe
+training_data  <- training_data[, sapply(training_data, is.numeric)]
+training_data$classe <- classe
+
+testing_data   <- testing_data[, sapply(testing_data, is.numeric)]
+testing_data   <- testing_data[, -length(names(testing_data))]
+
+head(training_data)
+head(testing_data)
+```
+
+## Finding a Model
+As a next step, I split the training dataset into two - one of which will be used for training, while the other used for cross-validation. The dataset was split 70% for the training and 30% for the cross-validation.
+```{r}
+set.seed(100)
+inTrain   <- createDataPartition(training_data$classe, p=0.70, list=F)
+training_data_subset <- training_data[inTrain, ]
+validation_data <- training_data[-inTrain, ]
+```
+
+There are several models that we can choose from to predict the classe variable. First, a decision tree model was explored.
+```{r}
+model_tree <- train(classe ~., method = "rpart", data = training_data_subset,
+                     trControl = trainControl(method = "cv", number = 10))
+model_tree
+results_tree <- confusionMatrix(validation_data$classe, predict(model_tree, validation_data))
+results_tree
+```
+
+From the results above, we can see that the accuracies are not sufficient for good model fit. The accuracy is around 48% only. This is a fairly low percentage, and it's possible that there are other models that can perform much better. As a result, I tried a random forest next.
+```{r}
+model_rf <- train(classe ~ ., data = training_data_subset, method ="rf", trControl = trainControl(method = "cv", 5), ntree = 250)
+model_rf
+results_rf <- confusionMatrix(validation_data$classe, predict(model_rf, validation_data))
+results_rf
+```
+
+We can see that the accuracy from the random forest model is much better at 99.41%. Additionally, the out-of-sample error is calculated below, showing that it is close to 0.59%. Given these strong results, we can move forward with this model.
+```{r}
+out_of_sample_error <- 1 - as.numeric(results_rf$overall[1])
+out_of_sample_error
+```
+
+## Results
+Using the random forest model developed in the previous section, we can predict the classe field using the testing dataset with 20 observations.
+```{r}
+final_results <- predict(model_rf, testing_data)
+final_results
+```
