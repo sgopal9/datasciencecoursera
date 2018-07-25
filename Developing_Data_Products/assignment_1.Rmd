@@ -1,0 +1,16 @@
+---
+title: "Developing Data Products Assignment 1"
+output: html_document
+---
+
+## Summary
+This webpage shows a map with UC Berkeley marked. Date created is July 24, 2018.
+
+```{r}
+library(leaflet)
+
+map <- leaflet() %>%
+        addTiles() %>%
+        addMarkers(lat = 37.872018, lng = -122.258669, popup = "University of California, Berkeley")
+map
+```
